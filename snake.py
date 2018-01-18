@@ -38,39 +38,46 @@ class Snake:
         if len(self.body) > self.length:
             last = self.body.pop(0)
             return last
-    
+
     def show(self):
         '''Show snake on the screen'''
         self.screen.clear()
-        for pice in self.body:
-            (pice_y, pice_x) = pice
-            self.screen.addch(pice_y, pice_x, self.look)
+
         last = self.last()
+        # first delete last pice
         if last:
             (last_y, last_x) = last
             self.screen.delch(last_y, last_x)
+        # then draw snake on the screen
+        for pice in self.body:
+            (pice_y, pice_x) = pice
+            self.screen.addch(pice_y, pice_x, self.look)
+
         self.screen.refresh()
+
+    def move(self):
+        '''Move snake after sec second, takes keys to change direction'''
+        c = self.screen.getch()
+        curses.flushinp()
+        
+        if c == curses.KEY_UP:
+            self.move_up()
+        elif c == curses.KEY_DOWN:
+            self.move_down()
+        elif c == curses.KEY_RIGHT:
+            self.move_right()
+        elif c == curses.KEY_LEFT:
+            self.move_left()
 
 
 def main(screen):
     screen.clear()
     screen.nodelay(True)
     curses.curs_set(False)
-    snake = Snake(screen, 25, 84, 3)
+    snake = Snake(screen, 25, 84, 30)
     while True:
         snake.show()
-        c = screen.getch()
-        curses.flushinp()
-        if c == curses.KEY_UP:
-            snake.move_up()
-        elif c == curses.KEY_DOWN:
-            snake.move_down()
-        elif c == curses.KEY_RIGHT:
-            snake.move_right()
-        elif c == curses.KEY_LEFT:
-            snake.move_left()
-
-
+        snake.move()
 
         curses.napms(50)
 
