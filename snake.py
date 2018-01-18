@@ -9,6 +9,8 @@ class Snake:
         self.x = pos_x
         self.y = pos_y
         self.length = length
+        self.speed = 50  # speed in ms
+        self.direction = self.move_up
         self.look = "@"
         self.body = []
         self.body.append((self.y, self.x))
@@ -59,15 +61,26 @@ class Snake:
         '''Move snake after sec second, takes keys to change direction'''
         c = self.screen.getch()
         curses.flushinp()
-        
+
         if c == curses.KEY_UP:
             self.move_up()
+            self.direction = self.move_up
+
         elif c == curses.KEY_DOWN:
             self.move_down()
+            self.direction = self.move_down
+
         elif c == curses.KEY_RIGHT:
             self.move_right()
+            self.direction = self.move_right
+
         elif c == curses.KEY_LEFT:
             self.move_left()
+            self.direction = self.move_left
+
+        elif c == -1:
+            self.direction()
+
 
 
 def main(screen):
@@ -79,7 +92,7 @@ def main(screen):
         snake.show()
         snake.move()
 
-        curses.napms(50)
+        curses.napms(snake.speed)
 
 
 wrapper(main)
