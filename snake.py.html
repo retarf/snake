@@ -1,0 +1,109 @@
+<html><head>
+<title>snake.py</title>
+<meta name="Generator" content="htmlizer/[Twisted, version 17.9.0]" />
+<link rel="alternate" href="snake.py" type="text/x-python" />
+
+</head>
+<body>
+<pre><span class="py-src-comment">#!/bin/env python</span>
+
+<span class="py-src-keyword">from</span> <span class="py-src-variable">curses</span> <span class="py-src-keyword">import</span> <span class="py-src-variable">wrapper</span>
+<span class="py-src-keyword">import</span> <span class="py-src-variable">curses</span>
+
+
+<span class="py-src-keyword">class</span> <span class="py-src-identifier">Snake</span>:
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">__init__</span>(<span class="py-src-parameter">self</span>, <span class="py-src-parameter">screen</span>, <span class="py-src-parameter">pos_y</span>, <span class="py-src-parameter">pos_x</span>, <span class="py-src-parameter">length</span>):
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span> = <span class="py-src-variable">screen</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span> = <span class="py-src-variable">pos_x</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">y</span> = <span class="py-src-variable">pos_y</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">length</span> = <span class="py-src-variable">length</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">speed</span> = <span class="py-src-number">50</span>  <span class="py-src-comment"># speed in ms</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">move_up</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">look</span> = <span class="py-src-string">"@"</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span> = []
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">append</span>((<span class="py-src-variable">self</span>.<span class="py-src-variable">y</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span>))
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">move_left</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Move left and append coordinate to body'''</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span> -= <span class="py-src-number">1</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">append</span>((<span class="py-src-variable">self</span>.<span class="py-src-variable">y</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span>))
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">move_right</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Move right and append coordinate to body'''</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span> += <span class="py-src-number">1</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">append</span>((<span class="py-src-variable">self</span>.<span class="py-src-variable">y</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span>))
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">move_up</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Move up and append coordinate to body'''</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">y</span> -= <span class="py-src-number">1</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">append</span>((<span class="py-src-variable">self</span>.<span class="py-src-variable">y</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span>))
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">move_down</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Move down and append coordinate to body'''</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">y</span> += <span class="py-src-number">1</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">append</span>((<span class="py-src-variable">self</span>.<span class="py-src-variable">y</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">x</span>))
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">last</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Return coordinate of last pice of body'''</span>
+        <span class="py-src-keyword">if</span> <span class="py-src-variable">len</span>(<span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>) &gt; <span class="py-src-variable">self</span>.<span class="py-src-variable">length</span>:
+            <span class="py-src-variable">last</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>.<span class="py-src-variable">pop</span>(<span class="py-src-number">0</span>)
+            <span class="py-src-keyword">return</span> <span class="py-src-variable">last</span>
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">show</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Show snake on the screen'''</span>
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span>.<span class="py-src-variable">clear</span>()
+
+        <span class="py-src-variable">last</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">last</span>()
+        <span class="py-src-comment"># first delete last pice</span>
+        <span class="py-src-keyword">if</span> <span class="py-src-variable">last</span>:
+            (<span class="py-src-variable">last_y</span>, <span class="py-src-variable">last_x</span>) = <span class="py-src-variable">last</span>
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span>.<span class="py-src-variable">delch</span>(<span class="py-src-variable">last_y</span>, <span class="py-src-variable">last_x</span>)
+        <span class="py-src-comment"># then draw snake on the screen</span>
+        <span class="py-src-keyword">for</span> <span class="py-src-variable">pice</span> <span class="py-src-keyword">in</span> <span class="py-src-variable">self</span>.<span class="py-src-variable">body</span>:
+            (<span class="py-src-variable">pice_y</span>, <span class="py-src-variable">pice_x</span>) = <span class="py-src-variable">pice</span>
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span>.<span class="py-src-variable">addch</span>(<span class="py-src-variable">pice_y</span>, <span class="py-src-variable">pice_x</span>, <span class="py-src-variable">self</span>.<span class="py-src-variable">look</span>)
+
+        <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span>.<span class="py-src-variable">refresh</span>()
+
+    <span class="py-src-keyword">def</span> <span class="py-src-identifier">move</span>(<span class="py-src-parameter">self</span>):
+        <span class="py-src-string">'''Move snake after sec second, takes keys to change direction'''</span>
+        <span class="py-src-variable">c</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">screen</span>.<span class="py-src-variable">getch</span>()
+        <span class="py-src-variable">curses</span>.<span class="py-src-variable">flushinp</span>()
+
+        <span class="py-src-keyword">if</span> <span class="py-src-variable">c</span> == <span class="py-src-variable">curses</span>.<span class="py-src-variable">KEY_UP</span>:
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">move_up</span>()
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">move_up</span>
+
+        <span class="py-src-keyword">elif</span> <span class="py-src-variable">c</span> == <span class="py-src-variable">curses</span>.<span class="py-src-variable">KEY_DOWN</span>:
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">move_down</span>()
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">move_down</span>
+
+        <span class="py-src-keyword">elif</span> <span class="py-src-variable">c</span> == <span class="py-src-variable">curses</span>.<span class="py-src-variable">KEY_RIGHT</span>:
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">move_right</span>()
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">move_right</span>
+
+        <span class="py-src-keyword">elif</span> <span class="py-src-variable">c</span> == <span class="py-src-variable">curses</span>.<span class="py-src-variable">KEY_LEFT</span>:
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">move_left</span>()
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span> = <span class="py-src-variable">self</span>.<span class="py-src-variable">move_left</span>
+
+        <span class="py-src-keyword">elif</span> <span class="py-src-variable">c</span> == -<span class="py-src-number">1</span>:
+            <span class="py-src-variable">self</span>.<span class="py-src-variable">direction</span>()
+
+
+
+<span class="py-src-keyword">def</span> <span class="py-src-identifier">main</span>(<span class="py-src-parameter">screen</span>):
+    <span class="py-src-variable">screen</span>.<span class="py-src-variable">clear</span>()
+    <span class="py-src-variable">screen</span>.<span class="py-src-variable">nodelay</span>(<span class="py-src-variable">True</span>)
+    <span class="py-src-variable">curses</span>.<span class="py-src-variable">curs_set</span>(<span class="py-src-variable">False</span>)
+    <span class="py-src-variable">snake</span> = <span class="py-src-variable">Snake</span>(<span class="py-src-variable">screen</span>, <span class="py-src-number">25</span>, <span class="py-src-number">84</span>, <span class="py-src-number">30</span>)
+    <span class="py-src-keyword">while</span> <span class="py-src-variable">True</span>:
+        <span class="py-src-variable">snake</span>.<span class="py-src-variable">show</span>()
+        <span class="py-src-variable">snake</span>.<span class="py-src-variable">move</span>()
+
+        <span class="py-src-variable">curses</span>.<span class="py-src-variable">napms</span>(<span class="py-src-variable">snake</span>.<span class="py-src-variable">speed</span>)
+
+
+<span class="py-src-variable">wrapper</span>(<span class="py-src-variable">main</span>)
+</pre>
+</body>
