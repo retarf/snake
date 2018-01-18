@@ -2,6 +2,7 @@
 
 from curses import wrapper
 import curses
+import sys
 
 
 class Snake:
@@ -15,6 +16,7 @@ class Snake:
         self.y = pos_y
         if self.y == -1:
             self.y = int(self.screen_y/2)
+        self.pos = (self.y, self.x)
         self.length = length
         self.speed = speed  # speed in ms
         self.direction = self.move_right
@@ -68,7 +70,6 @@ class Snake:
         '''Move snake after sec second, takes keys to change direction'''
         c = self.screen.getch()
         curses.flushinp()
-        print(self.direction)
 
         if c == curses.KEY_UP and self.direction != self.move_down:
             self.move_up()
@@ -89,8 +90,15 @@ class Snake:
         else:
             self.direction()
 
-    def eat(self):
-        pass
+
+    def crash(self):
+        '''Check if snake eat him self'''
+        self.pos = self.body[len(self.body) - 1]
+        # check if snake dont eat him self
+        if self.body.count(self.pos) > 1:
+            print('Game over')
+            curses.napms(2000)
+            sys.exit(1)
 
 
 
@@ -98,10 +106,11 @@ def main(screen):
     screen.clear()
     screen.nodelay(True)
     curses.curs_set(False)
-    snake = Snake(screen)
+    snake = Snake(screen, length=50)
     while True:
         snake.show()
         snake.move()
+        snake.crash()
 
         curses.napms(snake.speed)
 
