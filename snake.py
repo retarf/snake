@@ -35,8 +35,8 @@ class Snake:
 
     def last(self):
         '''Return coordinate of last pice of body'''
-        if len(self.body) == self.length:
-            last = self.body.pop(1)
+        if len(self.body) > self.length:
+            last = self.body.pop(0)
             return last
     
     def show(self):
