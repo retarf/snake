@@ -12,10 +12,10 @@ class Snake:
         (self.screen_y, self.screen_x) = screen.getmaxyx()
         self.x = pos_x
         if self.x == -1:
-            self.x = int(self.screen_x/2)
+            self.x = int(self.screen_x / 2)
         self.y = pos_y
         if self.y == -1:
-            self.y = int(self.screen_y/2)
+            self.y = int(self.screen_y / 2)
         self.pos = (self.y, self.x)
         self.length = length
         self.speed = speed  # speed in ms
@@ -103,27 +103,75 @@ class Snake:
 
     def get_through_wall(self):
         '''Function allow snake go through the walls'''
-        max_y = self.screen.getmaxyx()[0]
-        max_x = self.screen.getmaxyx()[1]
+        max_y = self.screen.getmaxyx()[0] - 1
+        max_x = self.screen.getmaxyx()[1] - 1
+        first = len(self.body) - 1
 
-        
+        # check if position is by the wall AND is in the wall direction
 
+        for e in self.body:
+            y = e[0]
+            x = e[1]
+            i = self.body.index(e)
+
+            if e[1] > max_x:
+                self.body.pop(i)
+                self.body.insert(i, (y, x - max_x))
+
+
+class FreeSnake(Snake):
+    
+    def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
+        super().__init__(screen, pos_y, pos_x, length, speed)
+        self.max_x = self.screen.getmaxyx()[1] - 1
+        self.max_y = self.screen.getmaxyx()[0] - 1
+
+    def move_left(self):
+        '''Move left and append coordinate to body'''
+        self.x -= 1
+        if self.x < 0:
+            self.x = self.max_x 
+        self.body.append((self.y, self.x))
+
+    def move_right(self):
+        '''Move right and append coordinate to body'''
+        self.x += 1
+        if self.x > self.max_x:
+            self.x = 0
+        self.body.append((self.y, self.x))
+
+    def move_up(self):
+        '''Move up and append coordinate to body'''
+        self.y -= 1
+        if self.y < 0:
+            self.y = self.max_y
+        self.body.append((self.y, self.x))
+
+    def move_down(self):
+        '''Move down and append coordinate to body'''
+        self.y += 1
+        if self.y > self.max_y:
+            self.y = 0
+        self.body.append((self.y, self.x))
 
 def main(screen):
     screen.clear()
     screen.nodelay(True)
-    screen.border('#','#','#')
+    screen.border('#', '#', '#')
     curses.curs_set(False)
-    snake = Snake(screen, length=150)
+    snake = FreeSnake(screen, length=150, speed=100)
     while True:
-        snake.show()
         snake.move()
-        snake.crash()
         snake.get_through_wall()
+        snake.crash()
+        snake.show()
 
-        # screen.getstr("o:", 80, 160) 
+        # print(screen.getmaxyx())
+        # print(snake.pos)
 
+        screen.addstr(screen.getmaxyx()[0] - 1,
+                      screen.getmaxyx()[1] - 4, "o: ")
+        screen.refresh()
         curses.napms(snake.speed)
-
 
 wrapper(main)
