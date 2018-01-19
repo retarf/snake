@@ -67,7 +67,7 @@ class Snake:
         self.screen.refresh()
 
     def move(self):
-        '''Move snake after sec second, takes keys to change direction'''
+        '''Move snake after sec second, takes keys to change direction and save first element actual position'''
         c = self.screen.getch()
         curses.flushinp()
 
@@ -90,27 +90,38 @@ class Snake:
         else:
             self.direction()
 
+        # save first element position
+        self.pos = self.body[len(self.body) - 1]
 
     def crash(self):
         '''Check if snake eat him self'''
-        self.pos = self.body[len(self.body) - 1]
         # check if snake dont eat him self
         if self.body.count(self.pos) > 1:
             print('Game over')
             curses.napms(2000)
             sys.exit(1)
 
+    def get_through_wall(self):
+        '''Function allow snake go through the walls'''
+        max_y = self.screen.getmaxyx()[0]
+        max_x = self.screen.getmaxyx()[1]
+
+        
 
 
 def main(screen):
     screen.clear()
     screen.nodelay(True)
+    screen.border('#','#','#')
     curses.curs_set(False)
-    snake = Snake(screen, length=50)
+    snake = Snake(screen, length=150)
     while True:
         snake.show()
         snake.move()
         snake.crash()
+        snake.get_through_wall()
+
+        # screen.getstr("o:", 80, 160) 
 
         curses.napms(snake.speed)
 
