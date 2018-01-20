@@ -3,7 +3,7 @@
 from curses import wrapper
 import curses
 import sys
-
+from random import randrange
 
 class Snake:
 
@@ -25,7 +25,7 @@ class Snake:
         self.body.append((self.y, self.x))
 
     # # def move_left(self):
-    #     '''Move left and append coordinate to body'''
+    ##     '''Move left and append coordinate to body'''
     #     self.x -= 1
     #     self.body.append((self.y, self.x))
 
@@ -92,8 +92,11 @@ class Snake:
 
         # save first element position
         self.pos = self.body[len(self.body) - 1]
+    
+    def eat(self):
+        pass
 
-    def crash(self):
+    def body_check(self):
         '''Check if snake eat him self'''
         # check if snake dont eat him self
         if self.body.count(self.pos) > 1:
@@ -188,27 +191,76 @@ class CageSnake(Snake):
         sys.exit(1)
 
 
-
 class Meal:
+    ''' Generate and show snake snaks '''
     from random import randrange
-    pass
+
+    def __init__(self, screen, number):
+        self.screen = screen
+        self.number = number
+        self.size_y = screen.getmaxyx()[0] - 1
+        self.size_x = screen.getmaxyx()[1] - 1
+        full_scr = self.size_y * self.size_x 
+        if self.number > full_scr: 
+            raise ToManySnacks
+        self.snacks = []
+        self.look = "o"
+
+    def generate(self):
+        ''' Generate snack fields '''
+        while len(self.snacks) < self.number:
+            y = randrange(1, self.size_y)
+            x = randrange(1, self.size_x)
+            if self.snacks.count((y, x)) == 0:
+                self.snacks.append((y, x))
+
+    def show(self):
+        ''' Show snacks on the screen '''
+        for snack in self.snacks:
+            (y, x) = snack
+            self.screen.addch(y, x, self.look)
+
+
+class Board:
+
+    def __init__(self, screen, size_y=1, size_x=1, mode="free"):
+        self.screen = screen
+        self.size_y = size_y
+        self.size_x = size_x
+        # Check mode and make snake
+        if mode == "free":
+            self.snake = FreeSnake(self.screen, length=3, speed=100)
+        elif mode == "cage":
+            self.snake = CageSnake(self.screen, length=3, speed=100)
+        else:
+            raise SnakeError('Something with snake object creation')
+
+    def show_snake(self):
+        self.snake.move()
+        self.snake.body_check()
+        self.snake.show()
+
+    def show_snacks(self):
+        pass
+
 
 
 def main(screen):
     screen.clear()
     screen.nodelay(True)
-    screen.border('#', '#', '#')
     curses.curs_set(False)
-    snake = CageSnake(screen, length=150, speed=100)
+    # screen.resize(30, 30)
+    snake = FreeSnake(screen, length=100, speed=50)
+    # scr = curses.newwin(10, 10, 40, 5)
+    meal = Meal(screen, 10)
     while True:
-        snake.move()
-        snake.crash()
-        snake.show()
-        print(screen.getmaxyx())
-        print(snake.pos)
+        meal.generate()
+        meal.show()
+        
+        # print(screen.getmaxyx())
+        # print(snake.pos)
 
-        screen.addstr(screen.getmaxyx()[0] - 1,
-                      screen.getmaxyx()[1] - 4, "o: ")
+        screen.border('#', '#', '#', '#', '#', '#', '#', '#')
         screen.refresh()
         curses.napms(snake.speed)
 
