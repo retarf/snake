@@ -24,25 +24,25 @@ class Snake:
         self.body = []
         self.body.append((self.y, self.x))
 
-    def move_left(self):
-        '''Move left and append coordinate to body'''
-        self.x -= 1
-        self.body.append((self.y, self.x))
+    # # def move_left(self):
+    #     '''Move left and append coordinate to body'''
+    #     self.x -= 1
+    #     self.body.append((self.y, self.x))
 
-    def move_right(self):
-        '''Move right and append coordinate to body'''
-        self.x += 1
-        self.body.append((self.y, self.x))
+    # # def move_right(self):
+    #     '''Move right and append coordinate to body'''
+    #     self.x += 1
+    #     self.body.append((self.y, self.x))
 
-    def move_up(self):
-        '''Move up and append coordinate to body'''
-        self.y -= 1
-        self.body.append((self.y, self.x))
+    # # def move_up(self):
+    #     '''Move up and append coordinate to body'''
+    #     self.y -= 1
+    #     self.body.append((self.y, self.x))
 
-    def move_down(self):
-        '''Move down and append coordinate to body'''
-        self.y += 1
-        self.body.append((self.y, self.x))
+    # def move_down(self):
+    #     '''Move down and append coordinate to body'''
+    #     self.y += 1
+    #     self.body.append((self.y, self.x))
 
     def last(self):
         '''Return coordinate of last pice of body'''
@@ -101,26 +101,10 @@ class Snake:
             curses.napms(2000)
             sys.exit(1)
 
-    def get_through_wall(self):
-        '''Function allow snake go through the walls'''
-        max_y = self.screen.getmaxyx()[0] - 1
-        max_x = self.screen.getmaxyx()[1] - 1
-        first = len(self.body) - 1
-
-        # check if position is by the wall AND is in the wall direction
-
-        for e in self.body:
-            y = e[0]
-            x = e[1]
-            i = self.body.index(e)
-
-            if e[1] > max_x:
-                self.body.pop(i)
-                self.body.insert(i, (y, x - max_x))
-
 
 class FreeSnake(Snake):
-    
+    '''This snake will go through the walls'''
+
     def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
         super().__init__(screen, pos_y, pos_x, length, speed)
         self.max_x = self.screen.getmaxyx()[1] - 1
@@ -130,7 +114,7 @@ class FreeSnake(Snake):
         '''Move left and append coordinate to body'''
         self.x -= 1
         if self.x < 0:
-            self.x = self.max_x 
+            self.x = self.max_x
         self.body.append((self.y, self.x))
 
     def move_right(self):
@@ -154,20 +138,74 @@ class FreeSnake(Snake):
             self.y = 0
         self.body.append((self.y, self.x))
 
+
+class CageSnake(Snake):
+    '''This snake won't go through the walls'''
+
+    def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
+        super().__init__(screen, pos_y, pos_x, length, speed)
+        self.max_x = self.screen.getmaxyx()[1] - 1
+        self.max_y = self.screen.getmaxyx()[0] - 1
+
+    def move_left(self):
+        '''Move left and append coordinate to body'''
+        self.x -= 1
+        if self.x < 0:
+            self.game_over()
+        else:
+            self.body.append((self.y, self.x))
+
+    def move_right(self):
+        '''Move right and append coordinate to body'''
+        self.x += 1
+        if self.x > self.max_x:
+            self.game_over()
+        else:
+            self.body.append((self.y, self.x))
+
+    def move_up(self):
+        '''Move up and append coordinate to body'''
+        self.y -= 1
+        if self.y < 0:
+            self.game_over()
+        else:
+            self.body.append((self.y, self.x))
+
+    def move_down(self):
+        '''Move down and append coordinate to body'''
+        self.y += 1
+        if self.y > self.max_y:
+            self.game_over()
+        else:
+            self.body.append((self.y, self.x))
+
+    def game_over(self):
+        ''' Temporary function. Show Game over when snake touch the wall'''
+        self.screen.clear()
+        self.screen.addstr(10, 10, "Game over")
+        self.screen.refresh()
+        curses.napms(2000)
+        sys.exit(1)
+
+
+
+class Meal:
+    from random import randrange
+    pass
+
+
 def main(screen):
     screen.clear()
     screen.nodelay(True)
     screen.border('#', '#', '#')
     curses.curs_set(False)
-    snake = FreeSnake(screen, length=150, speed=100)
+    snake = CageSnake(screen, length=150, speed=100)
     while True:
         snake.move()
-        snake.get_through_wall()
         snake.crash()
         snake.show()
-
-        # print(screen.getmaxyx())
-        # print(snake.pos)
+        print(screen.getmaxyx())
+        print(snake.pos)
 
         screen.addstr(screen.getmaxyx()[0] - 1,
                       screen.getmaxyx()[1] - 4, "o: ")
