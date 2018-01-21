@@ -23,26 +23,8 @@ class Snake:
         self.look = "@"
         self.body = []
         self.body.append((self.y, self.x))
-
-    # # def move_left(self):
-    ##     '''Move left and append coordinate to body'''
-    #     self.x -= 1
-    #     self.body.append((self.y, self.x))
-
-    # # def move_right(self):
-    #     '''Move right and append coordinate to body'''
-    #     self.x += 1
-    #     self.body.append((self.y, self.x))
-
-    # # def move_up(self):
-    #     '''Move up and append coordinate to body'''
-    #     self.y -= 1
-    #     self.body.append((self.y, self.x))
-
-    # def move_down(self):
-    #     '''Move down and append coordinate to body'''
-    #     self.y += 1
-    #     self.body.append((self.y, self.x))
+        self.max_x = self.screen.getmaxyx()[1] - 1
+        self.max_y = self.screen.getmaxyx()[0] - 1
 
     def last(self):
         '''Return coordinate of last pice of body'''
@@ -52,19 +34,17 @@ class Snake:
 
     def show(self):
         '''Show snake on the screen'''
-        self.screen.clear()
 
         last = self.last()
         # first delete last pice
         if last:
             (last_y, last_x) = last
-            self.screen.delch(last_y, last_x)
+            # delete last element
+            self.screen.addch(last_y, last_x, ' ')
         # then draw snake on the screen
         for pice in self.body:
             (pice_y, pice_x) = pice
             self.screen.addch(pice_y, pice_x, self.look)
-
-        self.screen.refresh()
 
     def move(self):
         '''Move snake after sec second, takes keys to change direction and save first element actual position'''
@@ -93,8 +73,12 @@ class Snake:
         # save first element position
         self.pos = self.body[len(self.body) - 1]
     
-    def eat(self):
-        pass
+    def eat(self, meal):
+        ''' Snake eat meal.snacks '''
+        if meal.snacks.count(self.pos):
+            meal.del_snack(self.pos)
+            self.length += 1
+        
 
     def body_check(self):
         '''Check if snake eat him self'''
@@ -107,11 +91,6 @@ class Snake:
 
 class FreeSnake(Snake):
     '''This snake will go through the walls'''
-
-    def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
-        super().__init__(screen, pos_y, pos_x, length, speed)
-        self.max_x = self.screen.getmaxyx()[1] - 1
-        self.max_y = self.screen.getmaxyx()[0] - 1
 
     def move_left(self):
         '''Move left and append coordinate to body'''
@@ -144,11 +123,6 @@ class FreeSnake(Snake):
 
 class CageSnake(Snake):
     '''This snake won't go through the walls'''
-
-    def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
-        super().__init__(screen, pos_y, pos_x, length, speed)
-        self.max_x = self.screen.getmaxyx()[1] - 1
-        self.max_y = self.screen.getmaxyx()[0] - 1
 
     def move_left(self):
         '''Move left and append coordinate to body'''
@@ -214,6 +188,10 @@ class Meal:
             if self.snacks.count((y, x)) == 0:
                 self.snacks.append((y, x))
 
+    def del_snack(self, snack):
+        ''' Delete snack '''
+        self.snacks.remove(snack)
+
     def show(self):
         ''' Show snacks on the screen '''
         for snack in self.snacks:
@@ -238,29 +216,57 @@ class Board:
     def show_snake(self):
         self.snake.move()
         self.snake.body_check()
+        self.snake.eat(self.meal)
         self.snake.show()
 
     def show_snacks(self):
         pass
 
 
+    def show(self, snake, meal):
+        
+        ''' Show snacks on the screen '''
+        for snack in meal.snacks:
+            (y, x) = snack
+            self.screen.addch(y, x, meal.look)
+
+        '''Show snake on the screen'''
+
+        last = snake.last()
+        # first delete last pice
+        if last:
+            (last_y, last_x) = last
+            # self.screen.delch(last_y, last_x)
+            self.screen.addch(last_y, last_x, ' ')
+        # then draw snake on the screen
+        for pice in snake.body:
+            (pice_y, pice_x) = pice
+            self.screen.addch(pice_y, pice_x, snake.look)
+
+
+
+        # self.screen.border('#', '#', '#', '#', '#', '#', '#', '#')
 
 def main(screen):
     screen.clear()
     screen.nodelay(True)
     curses.curs_set(False)
     # screen.resize(30, 30)
-    snake = FreeSnake(screen, length=100, speed=50)
+    snake = FreeSnake(screen, length=10, speed=150)
     # scr = curses.newwin(10, 10, 40, 5)
     meal = Meal(screen, 10)
+    meal.generate()
+    board = Board(screen)
     while True:
-        meal.generate()
-        meal.show()
+        screen.clear()
+        snake.move()
+        snake.body_check()
+        snake.eat(meal)
+        board.show(snake, meal)
         
         # print(screen.getmaxyx())
         # print(snake.pos)
 
-        screen.border('#', '#', '#', '#', '#', '#', '#', '#')
         screen.refresh()
         curses.napms(snake.speed)
 
