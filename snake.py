@@ -3,19 +3,21 @@
 from curses import wrapper
 import curses
 import sys
-from random import randrange
 
 class Snake:
 
     def __init__(self, screen, pos_y=-1, pos_x=-1, length=3, speed=100):
         self.screen = screen
-        (self.screen_y, self.screen_x) = screen.getmaxyx()
+        self.min_y = 1 
+        self.min_x = 1 
+        self.max_y = self.screen.getmaxyx()[0] - 2
+        self.max_x = self.screen.getmaxyx()[1] - 2
         self.x = pos_x
-        if self.x == -1:
-            self.x = int(self.screen_x / 2)
         self.y = pos_y
+        if self.x == -1:
+            self.x = int(self.max_x / 2)
         if self.y == -1:
-            self.y = int(self.screen_y / 2)
+            self.y = int(self.max_y / 2)
         self.pos = (self.y, self.x)
         self.length = length
         self.speed = speed  # speed in ms
@@ -23,8 +25,7 @@ class Snake:
         self.look = "@"
         self.body = []
         self.body.append((self.y, self.x))
-        self.max_x = self.screen.getmaxyx()[1] - 1
-        self.max_y = self.screen.getmaxyx()[0] - 1
+        self.score = 0
 
     def last(self):
         '''Return coordinate of last pice of body'''
@@ -44,7 +45,7 @@ class Snake:
         # then draw snake on the screen
         for pice in self.body:
             (pice_y, pice_x) = pice
-            self.screen.addch(pice_y, pice_x, self.look)
+            self.screen.addch(pice_y, pice_x, self.look, curses.COLOR_RED)
 
     def move(self):
         '''Move snake after sec second, takes keys to change direction and save first element actual position'''
@@ -73,11 +74,11 @@ class Snake:
         # save first element position
         self.pos = self.body[len(self.body) - 1]
     
-    def eat(self, meal):
+    def eat(self, snack):
         ''' Snake eat meal.snacks '''
-        if meal.snacks.count(self.pos):
-            meal.del_snack(self.pos)
+        if self.pos == snack: 
             self.length += 1
+            self.score += 1
         
 
     def body_check(self):
@@ -95,7 +96,7 @@ class FreeSnake(Snake):
     def move_left(self):
         '''Move left and append coordinate to body'''
         self.x -= 1
-        if self.x < 0:
+        if self.x < self.min_x:
             self.x = self.max_x
         self.body.append((self.y, self.x))
 
@@ -103,13 +104,13 @@ class FreeSnake(Snake):
         '''Move right and append coordinate to body'''
         self.x += 1
         if self.x > self.max_x:
-            self.x = 0
+            self.x = self.min_x 
         self.body.append((self.y, self.x))
 
     def move_up(self):
         '''Move up and append coordinate to body'''
         self.y -= 1
-        if self.y < 0:
+        if self.y < self.min_y:
             self.y = self.max_y
         self.body.append((self.y, self.x))
 
@@ -117,7 +118,7 @@ class FreeSnake(Snake):
         '''Move down and append coordinate to body'''
         self.y += 1
         if self.y > self.max_y:
-            self.y = 0
+            self.y = self.min_y
         self.body.append((self.y, self.x))
 
 
@@ -163,111 +164,3 @@ class CageSnake(Snake):
         self.screen.refresh()
         curses.napms(2000)
         sys.exit(1)
-
-
-class Meal:
-    ''' Generate and show snake snaks '''
-    from random import randrange
-
-    def __init__(self, screen, number):
-        self.screen = screen
-        self.number = number
-        self.size_y = screen.getmaxyx()[0] - 1
-        self.size_x = screen.getmaxyx()[1] - 1
-        full_scr = self.size_y * self.size_x 
-        if self.number > full_scr: 
-            raise ToManySnacks
-        self.snacks = []
-        self.look = "o"
-
-    def generate(self):
-        ''' Generate snack fields '''
-        while len(self.snacks) < self.number:
-            y = randrange(1, self.size_y)
-            x = randrange(1, self.size_x)
-            if self.snacks.count((y, x)) == 0:
-                self.snacks.append((y, x))
-
-    def del_snack(self, snack):
-        ''' Delete snack '''
-        self.snacks.remove(snack)
-
-    def show(self):
-        ''' Show snacks on the screen '''
-        for snack in self.snacks:
-            (y, x) = snack
-            self.screen.addch(y, x, self.look)
-
-
-class Board:
-
-    def __init__(self, screen, size_y=1, size_x=1, mode="free"):
-        self.screen = screen
-        self.size_y = size_y
-        self.size_x = size_x
-        # Check mode and make snake
-        if mode == "free":
-            self.snake = FreeSnake(self.screen, length=3, speed=100)
-        elif mode == "cage":
-            self.snake = CageSnake(self.screen, length=3, speed=100)
-        else:
-            raise SnakeError('Something with snake object creation')
-
-    def show_snake(self):
-        self.snake.move()
-        self.snake.body_check()
-        self.snake.eat(self.meal)
-        self.snake.show()
-
-    def show_snacks(self):
-        pass
-
-
-    def show(self, snake, meal):
-        
-        ''' Show snacks on the screen '''
-        for snack in meal.snacks:
-            (y, x) = snack
-            self.screen.addch(y, x, meal.look)
-
-        '''Show snake on the screen'''
-
-        last = snake.last()
-        # first delete last pice
-        if last:
-            (last_y, last_x) = last
-            # self.screen.delch(last_y, last_x)
-            self.screen.addch(last_y, last_x, ' ')
-        # then draw snake on the screen
-        for pice in snake.body:
-            (pice_y, pice_x) = pice
-            self.screen.addch(pice_y, pice_x, snake.look)
-
-
-
-        # self.screen.border('#', '#', '#', '#', '#', '#', '#', '#')
-
-def main(screen):
-    screen.clear()
-    screen.nodelay(True)
-    curses.curs_set(False)
-    # screen.resize(30, 30)
-    snake = FreeSnake(screen, length=10, speed=150)
-    # scr = curses.newwin(10, 10, 40, 5)
-    meal = Meal(screen, 10)
-    meal.generate()
-    board = Board(screen)
-    while True:
-        screen.clear()
-        snake.move()
-        snake.body_check()
-        snake.eat(meal)
-        board.show(snake, meal)
-        
-        # print(screen.getmaxyx())
-        # print(snake.pos)
-
-        screen.refresh()
-        curses.napms(snake.speed)
-
-wrapper(main)
