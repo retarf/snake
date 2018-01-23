@@ -6,7 +6,7 @@ import curses
 from snake import CageSnake, FreeSnake
 from meal import Meal
 
-from startend import menu
+from start import menu
 
 
 def main(screen):

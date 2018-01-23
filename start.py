@@ -78,6 +78,7 @@ def menu():
             break
         except ValueError:
             value_error()
+            break
 
         win.addstr(4, 1, mode)
         win.addstr(5, 1, str(y))
