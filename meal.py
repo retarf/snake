@@ -27,7 +27,9 @@ class Meal:
 
     def show(self):
         ''' Show snack on the screen '''
-        self.screen.addch(self.y, self.x, self.look)
+
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        self.screen.addstr(self.y, self.x, self.look, curses.color_pair(2))
     
 def main(screen):
     screen.clear()

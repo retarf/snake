@@ -14,20 +14,23 @@ def main(screen):
     # screen = curses.newwin(0, 0)
     # screen.keypad(True)
     
-    menu()
+    (y, x, mode) = menu()
 
     max_y = curses.LINES - 1
     max_x = curses.COLS - 1
 
     screen.clear()
     screen.nodelay(True)
-    screen.resize(30, 100)
+    screen.resize(y, x)
     # screen.resize(max_y - 1, max_x)
     screen.clear()
     screen.border()
     
     curses.curs_set(False)
-    snake = FreeSnake(screen, length=3, speed=100)
+    if mode == "Free":
+        snake = FreeSnake(screen, length=3, speed=100)
+    elif mode == "Cage":
+        snake = CageSnake(screen, length=3, speed=100)
     score_win = curses.newwin(1, 10, max_y, int((max_x - 11) / 2))
     meal = Meal(screen)
     meal.generate(snake.body)
@@ -45,11 +48,9 @@ def main(screen):
 
         screen.border('#', '#', '#', '#', '#', '#', '#', '#',) 
         
-        # print(screen.getmaxyx())
-        # print(snake.pos)
 
         score = "o: " + str(snake.score)
-        score_win.addstr(0, 0, score)
+        score_win.addstr(0, 0, score, curses.color_pair(2))
         score_win.refresh()
         screen.refresh()
         curses.napms(snake.speed)

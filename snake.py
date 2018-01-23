@@ -36,6 +36,8 @@ class Snake:
     def show(self):
         '''Show snake on the screen'''
 
+        curses.init_pair(1, 1, 0)
+
         last = self.last()
         # first delete last pice
         if last:
@@ -45,7 +47,7 @@ class Snake:
         # then draw snake on the screen
         for pice in self.body:
             (pice_y, pice_x) = pice
-            self.screen.addch(pice_y, pice_x, self.look, curses.COLOR_RED)
+            self.screen.addstr(pice_y, pice_x, self.look, curses.color_pair(1))
 
     def move(self):
         '''Move snake after sec second, takes keys to change direction and save first element actual position'''
