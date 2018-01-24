@@ -2,7 +2,7 @@
 
 from curses import wrapper
 import curses
-import sys
+from game_over import game_over
 
 class Snake:
 
@@ -87,10 +87,7 @@ class Snake:
         '''Check if snake eat him self'''
         # check if snake dont eat him self
         if self.body.count(self.pos) > 1:
-            print('Game over')
-            curses.napms(2000)
-            sys.exit(1)
-
+            game_over(self.screen, self.score)
 
 class FreeSnake(Snake):
     '''This snake will go through the walls'''
@@ -131,7 +128,7 @@ class CageSnake(Snake):
         '''Move left and append coordinate to body'''
         self.x -= 1
         if self.x < 0:
-            self.game_over()
+            game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
 
@@ -139,7 +136,7 @@ class CageSnake(Snake):
         '''Move right and append coordinate to body'''
         self.x += 1
         if self.x > self.max_x:
-            self.game_over()
+            game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
 
@@ -147,7 +144,7 @@ class CageSnake(Snake):
         '''Move up and append coordinate to body'''
         self.y -= 1
         if self.y < 0:
-            self.game_over()
+            game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
 
@@ -155,14 +152,6 @@ class CageSnake(Snake):
         '''Move down and append coordinate to body'''
         self.y += 1
         if self.y > self.max_y:
-            self.game_over()
+            game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
-
-    def game_over(self):
-        ''' Temporary function. Show Game over when snake touch the wall'''
-        self.screen.clear()
-        self.screen.addstr(10, 10, "Game over")
-        self.screen.refresh()
-        curses.napms(2000)
-        sys.exit(1)

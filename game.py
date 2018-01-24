@@ -7,6 +7,7 @@ from snake import CageSnake, FreeSnake
 from meal import Meal
 
 from start import menu
+from game_over import game_over
 
 
 def main(screen):

@@ -116,7 +116,14 @@ def menu():
         
         try:
             y = int(win.getstr(1, len(y_question) + 2, 3))
+            if y < 10:
+                value_error("Za mała tablica", "Podaj większą wartość")
+                continue
             x = int(win.getstr(2, len(x_question) + 2, 2))
+            if x < 10:
+                value_error("Za mała tablica", "Podaj większą wartość")
+                continue
+
             mode = choose_mode(win, len_q)
             break
         except ValueError:

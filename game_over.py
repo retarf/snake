@@ -1,3 +1,6 @@
+import curses
+import sys
+
 def game_over(scr, score):
     ''' Display "Game over" '''
 
@@ -10,16 +13,32 @@ def game_over(scr, score):
     words = "Game over"
     score = "Score: " + str(score) 
 
-    y_size = len(max((words, score), key=len))
-    x_size = 2
+    x_size = len(max((words, score), key=len)) + 20 
+    y_size = 8 
 
-    center = int((max_y - y_size) / 2)
+    center = int((max_x - x_size) / 2)
 
     win = curses.newwin(y_size, x_size, 3, center)
+    win.border()
     
+    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 
-    win.addstr(1, 2, words, curses.color_pair(2))
-    win.addstr(2, 2, score, curses.color_pair(2))
+    center = int((x_size - len(words)) / 2)
+    win.addstr(3, center, words, curses.color_pair(2))
+    center = int((x_size - len(score)) / 2)
+    win.addstr(4, center, score, curses.color_pair(1))
 
-    curses.napms(2000)
+    scr.resize(max_y, max_x)
+
+    text = 'Naciśnij ENTER'
+    scr.addstr(int(max_y / 2),int((max_x - len(text)) / 2), text) 
+    scr.refresh()
+    win.refresh()
+    
+    while True:
+        c = win.getch()
+        if c == curses.KEY_ENTER or c == 13 or c == 10:
+            break
+
+    sys.exit(1)
