@@ -7,8 +7,8 @@ def game_over(scr, score):
     scr.clear()
     scr.refresh()
 
-    max_y = curses.LINES - 1
-    max_x = curses.COLS - 1
+    max_y = curses.LINES  
+    max_x = curses.COLS 
 
     words = "Game over"
     score = "Score: " + str(score) 
@@ -41,4 +41,12 @@ def game_over(scr, score):
         if c == curses.KEY_ENTER or c == 13 or c == 10:
             break
 
+    scr.clear()
+    scr.refresh()
+    win.clear()
+    win.refresh()
+
+    curses.nocbreak()
+    del win
+    del scr
     sys.exit(1)
