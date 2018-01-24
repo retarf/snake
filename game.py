@@ -23,10 +23,12 @@ def main(screen):
     screen.resize(y, x)
     curses.curs_set(False)
 
+    speed = 1500
+
     if mode == "free":
-        snake = FreeSnake(screen, length=3, speed=2000)
+        snake = FreeSnake(screen, length=3, speed=speed)
     elif mode == "cage":
-        snake = CageSnake(screen, length=3, speed=2000)
+        snake = CageSnake(screen, length=3, speed=speed)
 
     score_win = curses.newwin(1, 22, max_y, int((max_x - 11) / 2))
     meal = Meal(screen)
@@ -36,11 +38,12 @@ def main(screen):
         screen.clear()
         snake.move()
         snake.body_check()
+        # if snake ate
         if snake.pos == meal.pos:
             snake.eat(meal.pos)
             meal.generate(snake.body)
-        meal.show()
         snake.show()
+        meal.show()
 
         # add border
         screen.border('#', '#', '#', '#', '#', '#', '#', '#',) 

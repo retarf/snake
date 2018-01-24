@@ -3,6 +3,8 @@ import sys
 
 def game_over(scr, score):
     ''' Display "Game over" '''
+    scr.refresh()
+    curses.napms(1000)
 
     scr.clear()
     scr.refresh()

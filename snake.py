@@ -80,20 +80,14 @@ class Snake:
         self.pos = self.body[len(self.body) - 1]
         self.last_pos()
 
-        # if snake takes all board 
-        # if self.length == self.max_y * self.max_x + self.first_length:
-            # game_over(self.screen, self.score)
-
     def eat(self, snack):
         ''' Snake eat meal.snacks '''
         if self.pos == snack: 
             self.length += 1
             self.score += 1
-            if self.length == (self.max_y * self.max_x):
-                sss = "To to " + str(self.max_y * self.max_x)
-                self.screen.addstr(0,0, sss)
+            if self.length > (self.max_y * self.max_x):
+                self.show()
                 self.screen.refresh()
-                curses.napms(2000)
                 game_over(self.screen, self.score)
         
 

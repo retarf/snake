@@ -23,6 +23,7 @@ class Meal:
             self.x = randrange(1, self.max_x)
             self.pos = (self.y, self.x)
             if body.count(self.pos) == 0:
+                # self.screen.refresh()
                 break
 
     def show(self):
