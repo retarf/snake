@@ -21,17 +21,17 @@ def main(screen):
     screen.clear()
     screen.nodelay(True)
     screen.resize(y, x)
-    screen.clear()
-    screen.border()
-    
     curses.curs_set(False)
+
     if mode == "free":
-        snake = FreeSnake(screen, length=3, speed=100)
+        snake = FreeSnake(screen, length=3, speed=2000)
     elif mode == "cage":
-        snake = CageSnake(screen, length=3, speed=100)
-    score_win = curses.newwin(1, 10, max_y, int((max_x - 11) / 2))
+        snake = CageSnake(screen, length=3, speed=2000)
+
+    score_win = curses.newwin(1, 22, max_y, int((max_x - 11) / 2))
     meal = Meal(screen)
     meal.generate(snake.body)
+
     while True:
         screen.clear()
         snake.move()
@@ -43,11 +43,10 @@ def main(screen):
         snake.show()
 
         # add border
-
         screen.border('#', '#', '#', '#', '#', '#', '#', '#',) 
+        screen.refresh()
         
-
-        score = "o: " + str(snake.score)
+        score = "o: " + str(snake.score) + "  max: " + str((meal.max_y - 1) * (meal.max_x - 1) - snake.first_length)
         score_win.addstr(0, 0, score, curses.color_pair(2))
         score_win.refresh()
         screen.refresh()

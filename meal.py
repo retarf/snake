@@ -30,23 +30,3 @@ class Meal:
 
         curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
         self.screen.addstr(self.y, self.x, self.look, curses.color_pair(2))
-    
-def main(screen):
-    screen.clear()
-    screen.nodelay(True)
-    curses.curs_set(False)
-    global max_y
-    global max_x
-    max_y = screen.getmaxyx()[0] - 2
-    max_x = screen.getmaxyx()[1] - 2
-    meal = Meal()
-    meal.generate()
-    while True:
-        screen.clear()
-        meal.show(screen)
-        
-        screen.refresh()
-        curses.napms(100)
-
-if __name__ == '__main__':
-    wrapper(main)

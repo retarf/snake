@@ -6,8 +6,8 @@ def choose_mode(win, len_q):
 
     mode = "free"
     
-    win.addstr(3, len_q, "Free", curses.A_REVERSE)
-    win.addstr(3, len_q + 4, " / Cage", curses.A_NORMAL)
+    win.addstr(3, len_q, "Tak", curses.A_REVERSE)
+    win.addstr(3, len_q + 3, " / Nie", curses.A_NORMAL)
     win.refresh()
 
     curses.curs_set(False)
@@ -19,14 +19,14 @@ def choose_mode(win, len_q):
         c = win.getch()
 
         if c == curses.KEY_LEFT:
-            win.addstr(3, len_q, "Free", curses.A_REVERSE)
-            win.addstr(3, len_q + 4, " / Cage", curses.A_NORMAL)
+            win.addstr(3, len_q, "Tak", curses.A_REVERSE)
+            win.addstr(3, len_q + 3, " / Nie", curses.A_NORMAL)
             
             mode = "free"
 
         elif c == curses.KEY_RIGHT:
-            win.addstr(3, len_q, "Free / ", curses.A_NORMAL)
-            win.addstr(3, len_q + 7, "Cage", curses.A_REVERSE)
+            win.addstr(3, len_q, "Tak / ", curses.A_NORMAL)
+            win.addstr(3, len_q + 6, "Nie", curses.A_REVERSE)
 
             mode = "cage"
         
@@ -95,14 +95,14 @@ def menu():
 
     y_question = 'Podaj wielkość planszy Y: '
     x_question = 'Podaj wielkość planszy X: '
-    mode_question = 'Podaj tryb gry: '
+    mode_question = 'Przechodzenie przez ściany: '
 
-    start = get_center(4, len(y_question) + 7)
-    
-    win = curses.newwin(5, len(y_question) + 7, start[0], start[1])
+    start = get_center(4, len(mode_question) + 13)
+   
+    win = curses.newwin(5, len(mode_question) + 13, start[0], start[1])
     word_snake = ' SNAKE '
     snake_len = len(word_snake)
-    center = int((len(y_question) + 7 - snake_len) / 2) 
+    center = int((len(mode_question) + 13 - snake_len) / 2) 
 
     while True:
     
@@ -120,15 +120,15 @@ def menu():
         
         try:
             y = int(win.getstr(1, len(y_question) + 2, 3))
-            if y < 10:
-                value_error("Za mała plansza", "Minimalna wartość to:", "10")
+            if y < 5:
+                value_error("Za mała plansza", "Minimalna wartość to:", "5")
                 continue
             if y > max_y:
                 value_error("Za duża plansza", "Maksymalna wartość to:", str(max_y))
                 continue
             x = int(win.getstr(2, len(x_question) + 2, 3))
-            if x < 10:
-                value_error("Za mała plansza", "Minimalna wartość to:", "10")
+            if x < 5:
+                value_error("Za mała plansza", "Minimalna wartość to:", "5")
                 continue
             if x > max_x:
                 value_error("Za duża plansza", "Maksymalna wartość to:", str(max_x))

@@ -20,6 +20,8 @@ class Snake:
             self.y = int(self.max_y / 2)
         self.pos = (self.y, self.x)
         self.length = length
+        self.first_length = length
+        self.last = None
         self.speed = speed  # speed in ms
         self.direction = self.move_right
         self.look = "@"
@@ -27,18 +29,19 @@ class Snake:
         self.body.append((self.y, self.x))
         self.score = 0
 
-    def last(self):
+    def last_pos(self):
         '''Return coordinate of last pice of body'''
         if len(self.body) > self.length:
             last = self.body.pop(0)
-            return last
+            self.last = last
 
     def show(self):
         '''Show snake on the screen'''
 
         curses.init_pair(1, 1, 0)
+        # self.last_pos()
 
-        last = self.last()
+        last = self.last
         # first delete last pice
         if last:
             (last_y, last_x) = last
@@ -75,17 +78,27 @@ class Snake:
 
         # save first element position
         self.pos = self.body[len(self.body) - 1]
-    
+        self.last_pos()
+
+        # if snake takes all board 
+        # if self.length == self.max_y * self.max_x + self.first_length:
+            # game_over(self.screen, self.score)
+
     def eat(self, snack):
         ''' Snake eat meal.snacks '''
         if self.pos == snack: 
             self.length += 1
             self.score += 1
+            if self.length == (self.max_y * self.max_x):
+                sss = "To to " + str(self.max_y * self.max_x)
+                self.screen.addstr(0,0, sss)
+                self.screen.refresh()
+                curses.napms(2000)
+                game_over(self.screen, self.score)
         
 
     def body_check(self):
         '''Check if snake eat him self'''
-        # check if snake dont eat him self
         if self.body.count(self.pos) > 1:
             game_over(self.screen, self.score)
 
@@ -127,7 +140,7 @@ class CageSnake(Snake):
     def move_left(self):
         '''Move left and append coordinate to body'''
         self.x -= 1
-        if self.x < 0:
+        if self.x < 1:
             game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
@@ -143,7 +156,7 @@ class CageSnake(Snake):
     def move_up(self):
         '''Move up and append coordinate to body'''
         self.y -= 1
-        if self.y < 0:
+        if self.y < 1:
             game_over(self.screen, self.score)
         else:
             self.body.append((self.y, self.x))
