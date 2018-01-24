@@ -3,8 +3,6 @@ import sys
 
 def game_over(scr, score):
     ''' Display "Game over" '''
-    scr.refresh()
-    curses.napms(1000)
 
     scr.clear()
     scr.refresh()
@@ -38,6 +36,7 @@ def game_over(scr, score):
     scr.refresh()
     win.refresh()
     
+    # wait until user push ENTER button
     while True:
         c = win.getch()
         if c == curses.KEY_ENTER or c == 13 or c == 10:

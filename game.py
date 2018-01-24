@@ -38,7 +38,7 @@ def main(screen):
         screen.clear()
         snake.move()
         snake.body_check()
-        # if snake ate
+        # if snake ate snack generate new one
         if snake.pos == meal.pos:
             snake.eat(meal.pos)
             meal.generate(snake.body)
@@ -49,7 +49,8 @@ def main(screen):
         screen.border('#', '#', '#', '#', '#', '#', '#', '#',) 
         screen.refresh()
         
-        score = "o: " + str(snake.score) + "  max: " + str((meal.max_y - 1) * (meal.max_x - 1) - snake.first_length)
+        # show actual score and maximum score
+        score = "o: " + str(snake.score) + " / max: " + str((meal.max_y - 1) * (meal.max_x - 1) - snake.first_length)
         score_win.addstr(0, 0, score, curses.color_pair(2))
         score_win.refresh()
         screen.refresh()

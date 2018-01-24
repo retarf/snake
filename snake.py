@@ -10,17 +10,18 @@ class Snake:
         self.screen = screen
         self.min_y = 1 
         self.min_x = 1 
-        self.max_y = self.screen.getmaxyx()[0] - 2
-        self.max_x = self.screen.getmaxyx()[1] - 2
+        self.max_y = self.screen.getmaxyx()[0] - 2 # max y without borders
+        self.max_x = self.screen.getmaxyx()[1] - 2 # max x without borders
         self.x = pos_x
         self.y = pos_y
+        # if position isn't set, set it on center
         if self.x == -1:
             self.x = int(self.max_x / 2)
         if self.y == -1:
             self.y = int(self.max_y / 2)
         self.pos = (self.y, self.x)
         self.length = length
-        self.first_length = length
+        self.first_length = length # length on the start
         self.last = None
         self.speed = speed  # speed in ms
         self.direction = self.move_right
@@ -42,18 +43,18 @@ class Snake:
         # self.last_pos()
 
         last = self.last
-        # first delete last pice
+        # first, delete last pice
         if last:
             (last_y, last_x) = last
-            # delete last element
             self.screen.addch(last_y, last_x, ' ')
-        # then draw snake on the screen
+        # then, draw snake on the screen
         for pice in self.body:
             (pice_y, pice_x) = pice
             self.screen.addstr(pice_y, pice_x, self.look, curses.color_pair(1))
 
     def move(self):
         '''Move snake after sec second, takes keys to change direction and save first element actual position'''
+
         c = self.screen.getch()
         curses.flushinp()
 
@@ -82,9 +83,11 @@ class Snake:
 
     def eat(self, snack):
         ''' Snake eat meal.snacks '''
+
         if self.pos == snack: 
             self.length += 1
             self.score += 1
+            # Game over if body takes all board
             if self.length > (self.max_y * self.max_x):
                 self.show()
                 self.screen.refresh()
@@ -93,6 +96,7 @@ class Snake:
 
     def body_check(self):
         '''Check if snake eat him self'''
+
         if self.body.count(self.pos) > 1:
             game_over(self.screen, self.score)
 

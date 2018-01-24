@@ -22,8 +22,8 @@ class Meal:
             self.y = randrange(1, self.max_y)
             self.x = randrange(1, self.max_x)
             self.pos = (self.y, self.x)
+            # if generated snack position isn't on snake body
             if body.count(self.pos) == 0:
-                # self.screen.refresh()
                 break
 
     def show(self):
