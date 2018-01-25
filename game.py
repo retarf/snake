@@ -23,7 +23,7 @@ def main(screen):
     screen.resize(y, x)
     curses.curs_set(False)
 
-    speed = 1500
+    speed = 150
 
     if mode == "free":
         snake = FreeSnake(screen, length=3, speed=speed)

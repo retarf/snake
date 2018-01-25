@@ -64,7 +64,7 @@ def value_error(*args):
     for arg in args:
         line += 1
         center = int((x_size - len(arg)) / 2)
-        s.addstr(line, center, arg, curses.color_pair(1))
+        win.addstr(line, center, arg, curses.color_pair(1))
 
     win.refresh()
     curses.napms(1500)
